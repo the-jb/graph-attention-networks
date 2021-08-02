@@ -17,7 +17,7 @@ class GAT(nn.Module):
         x = F.elu(x).view(-1, self.k * self.f)
         x = self.activation_layer(graph, x)
         x = torch.mean(x, -2)
-        x = x.softmax(-1)
+        x = x.softmax(-1)  # TODO: needs to be fixed to mask softmax for the unconnected neighbors.
         return x.squeeze(0)
 
 
@@ -70,6 +70,7 @@ class MultiHeadAttention(nn.Module):
         h_js = h_js.transpose(-2, -3)
 
         x = self.a(h_i, h_js)  # [BATCH * HEADS * NODES]
+        # TODO: needs to be fixed to mask softmax for the unconnected neighbors.
         x = torch.softmax(x, -1)  # [BATCH * HEADS * NODES]
         x = x.unsqueeze(-1)  # [BATCH * HEAD * NODES * 1]
 
